@@ -3,7 +3,7 @@
 Generate 10 manifestworks on cluster1.
 
 ```bash
-➜  klusterlet-agent git:(main) ✗ ./run.sh resource.yaml 10
+$ ./run.sh apply resource.yaml 10
 manifestwork.work.open-cluster-management.io/my-work-1 created
 manifestwork.work.open-cluster-management.io/my-work-2 created
 manifestwork.work.open-cluster-management.io/my-work-3 created
@@ -16,10 +16,25 @@ manifestwork.work.open-cluster-management.io/my-work-9 created
 manifestwork.work.open-cluster-management.io/my-work-10 created
 ```
 
+Delete 10 manifestworks on cluster1.
+```bash
+$ ./run.sh delete resource.yaml 10
+manifestwork.work.open-cluster-management.io "my-work-1" deleted
+manifestwork.work.open-cluster-management.io "my-work-2" deleted
+manifestwork.work.open-cluster-management.io "my-work-3" deleted
+manifestwork.work.open-cluster-management.io "my-work-4" deleted
+manifestwork.work.open-cluster-management.io "my-work-5" deleted
+manifestwork.work.open-cluster-management.io "my-work-6" deleted
+manifestwork.work.open-cluster-management.io "my-work-7" deleted
+manifestwork.work.open-cluster-management.io "my-work-8" deleted
+manifestwork.work.open-cluster-management.io "my-work-9" deleted
+manifestwork.work.open-cluster-management.io "my-work-10" deleted
+```
+
 Generate 10 failed manifestworks on cluster1.
 
 ```bash
-$./run.sh resource-failure.yaml 10
+$ ./run.sh apply resource-failure.yaml 10
 manifestwork.work.open-cluster-management.io/my-fake-work-1 created
 manifestwork.work.open-cluster-management.io/my-fake-work-2 created
 manifestwork.work.open-cluster-management.io/my-fake-work-3 created
