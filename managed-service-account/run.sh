@@ -1,13 +1,31 @@
 #!/bin/bash
-cluster_name=$3
+operate=$1
+if [ -z "$operate" ]
+then
+      echo "Operate is empty"
+      exit 1
+fi
+resource_template=$2
+if [ -z "$resource_template" ]
+then
+      echo "Resource template is empty"
+      exit 1
+fi
+count=$3
+if [ -z "$count" ]
+then
+      echo "Count is empty"
+      exit 1
+fi
+cluster_name=$4
 if [ -z "$cluster_name" ]
 then
       echo "Cluster name is empty"
       exit 1
 fi
 
-for((i=1;i<=$2;i++))
+for((i=1;i<=$count;i++))
 do
-        kubectl apply -f $1 --dry-run=client -o yaml | sed "s|NUM|${i}|g" \
-        | sed "s|MANAGED-CLUSTER-NAME|${cluster_name}|g" | kubectl apply -f -
+        kubectl apply -f $resource_template --dry-run=client -o yaml | sed "s|NUM|${i}|g" \
+        | sed "s|MANAGED-CLUSTER-NAME|${cluster_name}|g" | kubectl $operate -f -
 done
