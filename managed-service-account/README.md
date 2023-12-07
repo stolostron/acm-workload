@@ -3,7 +3,7 @@
 Generate 10 manifestworks on cluster1.
 
 ```bash
-➜  klusterlet-agent git:(main) ✗ ./run.sh resource.yaml 10 cluster1
+➜  klusterlet-agent git:(main) ✗ ./run.sh apply resource.yaml 10 cluster1
 managedserviceaccount.authentication.open-cluster-management.io/managed-service-account-1 created
 managedserviceaccount.authentication.open-cluster-management.io/managed-service-account-2 created
 managedserviceaccount.authentication.open-cluster-management.io/managed-service-account-3 created
