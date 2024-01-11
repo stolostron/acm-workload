@@ -2,7 +2,7 @@ apiVersion: view.open-cluster-management.io/v1beta1
 kind: ManagedClusterView
 metadata:
   name: my-mcv-NUM
-  namespace: MANAGED-CLUSTER-NAME
+  namespace: MANAGED_CLUSTER_NAME
 spec:
   scope:
     name: hello-NUM
@@ -13,7 +13,7 @@ apiVersion: action.open-cluster-management.io/v1beta1
 kind: ManagedClusterAction
 metadata:
   name: my-action-create-NUM
-  namespace: MANAGED-CLUSTER-NAME
+  namespace: MANAGED_CLUSTER_NAME
 spec:
   actionType: Create
   kube:

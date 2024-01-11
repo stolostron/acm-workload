@@ -27,5 +27,5 @@ fi
 for((i=1;i<=$count;i++))
 do
         kubectl apply -f $resource_template --dry-run=client -o yaml | sed "s|NUM|${i}|g" \
-        | sed "s|MANAGED-CLUSTER-NAME|${cluster_name}|g" | kubectl $operate -f -
+        | sed "s|MANAGED_CLUSTER_NAME|${cluster_name}|g" | kubectl $operate -f -
 done

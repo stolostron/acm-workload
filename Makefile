@@ -2,7 +2,7 @@ SHELL :=/bin/bash
 MANAGED_CLUSTER_NAME ?= cluster1
 RESOUCE_COUNT ?= 10
 
-test: test-klusterlet-agent test-work-mgr test-managed-service-account test-application test-obs-search
+test: test-klusterlet-agent test-work-mgr test-managed-service-account test-application test-obs-search test-policy
 
 test-failure: test-klusterlet-agent-failure test-work-mgr-failure test-application-failure test-obs-search-failure
 
@@ -34,6 +34,9 @@ test-obs-search:
 test-obs-search-failure:
 	cd klusterlet-agent && ./run.sh apply resource-failure.yaml 100 $(MANAGED_CLUSTER_NAME)
 
+test-policy:
+	cd policy && ./run.sh apply resource.yaml 2 $(MANAGED_CLUSTER_NAME)
+
 clean-klusterlet-agent:
 	cd klusterlet-agent && \
 	./run.sh delete resource.yaml $(RESOUCE_COUNT) $(MANAGED_CLUSTER_NAME) || true && \
@@ -56,4 +59,7 @@ clean-application:
 clean-obs-search:
 	cd klusterlet-agent && ./run.sh delete resource.yaml 100 $(MANAGED_CLUSTER_NAME) || true
 
-clean-all: clean-klusterlet-agent clean-work-mgr clean-managed-service-account clean-application clean-obs-search
+clean-policy:
+	cd policy && ./run.sh delete resource.yaml 2 $(MANAGED_CLUSTER_NAME) || true
+
+clean-all: clean-klusterlet-agent clean-work-mgr clean-managed-service-account clean-application clean-obs-search clean-policy
