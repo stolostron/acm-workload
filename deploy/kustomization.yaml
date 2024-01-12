@@ -1,0 +1,8 @@
+resources:
+- cluserrolebinding.yaml
+- ./output/job_app_create.yaml
+- ./output/job_app_delete.yaml
+- ./output/job_policy_create.yaml
+- ./output/job_policy_delete.yaml
+- ./output/job_obs_create.yaml
+- ./output/job_obs_delete.yaml

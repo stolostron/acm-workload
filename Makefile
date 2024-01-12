@@ -53,8 +53,8 @@ clean-managed-service-account:
 
 clean-application:
 	cd application && \
-	oc delete -f _output/healthy-app-helloworld.yaml || true && \
-	oc delete -f _output/unhealthy-app-nginx.yaml || true
+	./run.sh delete healthy-app-helloworld.yaml $(RESOUCE_COUNT) $(MANAGED_CLUSTER_NAME) || true && \
+	./run.sh delete unhealthy-app-nginx.yaml $(RESOUCE_COUNT) $(MANAGED_CLUSTER_NAME) || true 
 
 clean-obs-search:
 	cd klusterlet-agent && ./run.sh delete resource.yaml 100 $(MANAGED_CLUSTER_NAME) || true
