@@ -2,6 +2,6 @@ apiVersion: authentication.open-cluster-management.io/v1beta1
 kind: ManagedServiceAccount
 metadata:
   name: managed-service-account-NUM
-  namespace: MANAGED-CLUSTER-NAME
+  namespace: MANAGED_CLUSTER_NAME
 spec:
   rotation: {}
