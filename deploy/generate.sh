@@ -19,7 +19,13 @@ calculate_and_format_cron_schedule() {
 create_yaml_file_from_template() {
     local template=$1
     local output_file=$2
-    sed -e "s/<CRON_SCHEDULE>/${3}/g; s/<CLUSTER_NAME>/${cluster_name}/g" "$template" > "$output_file"
+
+    if [ -e "$template" ]; then
+        sed -e "s/<CRON_SCHEDULE>/${3}/g; s/<CLUSTER_NAME>/${cluster_name}/g" "$template" > "$output_file"
+    else
+       echo "Warning: $template does not exist."
+    fi
+
 }
 
 # Create YAML files based on offset
@@ -57,3 +63,7 @@ echo "managed cluster creationTimestamp: $mc_timestamp"
 create_yaml_by_offset "$mc_timestamp" "6" "7.5" "job_app"
 create_yaml_by_offset "$mc_timestamp" "7.5" "9" "job_policy"
 create_yaml_by_offset "$mc_timestamp" "9" "10.5" "job_obs"
+create_yaml_by_offset "$mc_timestamp" "10.5" "12" "job_enable_app"
+create_yaml_by_offset "$mc_timestamp" "12" "13.5" "job_enable_policy_proxy"
+create_yaml_by_offset "$mc_timestamp" "13.5" "15" "job_enable_policy_search"
+create_yaml_by_offset "$mc_timestamp" "15" "16.5" "job_enable_all"

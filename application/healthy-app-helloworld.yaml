@@ -37,7 +37,7 @@ metadata:
     apps.open-cluster-management.io/github-path: helloworld
     apps.open-cluster-management.io/github-branch: main
 spec:
-  channel: <APP-NS>/helloworld-channel
+  channel: <APP-NS>-<CLUSTER-NAME>/helloworld-channel
   placement:
     placementRef:
       name: helloworld-app-placement

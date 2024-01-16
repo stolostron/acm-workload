@@ -48,3 +48,19 @@ gather_and_analyze "$folder_name" "$policy_schedule_timestamp" "0.5" "1.5"
 # obs cron job schedule time
 obs_schedule_timestamp=$(kubectl get cronjob obs-create-$cluster_name -o json | jq -r '.status.lastScheduleTime')
 gather_and_analyze "$folder_name" "$obs_schedule_timestamp" "0.5" "1.5"
+
+# enable-app
+enable_app_schedule_timestamp=$(kubectl get cronjob enable-app-$cluster_name -o json | jq -r '.status.lastScheduleTime')
+gather_and_analyze "$folder_name" "$enable_app_schedule_timestamp" "0.5" "1.5"
+
+# enable-policy-proxy
+enable_policy_proxy_schedule_timestamp=$(kubectl get cronjob enable-policy-proxy-$cluster_name -o json | jq -r '.status.lastScheduleTime')
+gather_and_analyze "$folder_name" "$enable_policy_proxy_schedule_timestamp" "0.5" "1.5"
+
+# enable-policy-search
+enable_policy_search_schedule_timestamp=$(kubectl get cronjob enable-policy-search-$cluster_name -o json | jq -r '.status.lastScheduleTime')
+gather_and_analyze "$folder_name" "$enable_policy_search_schedule_timestamp" "0.5" "1.5"
+
+# enable-all
+enable_all_schedule_timestamp=$(kubectl get cronjob enable-all-$cluster_name -o json | jq -r '.status.lastScheduleTime')
+gather_and_analyze "$folder_name" "$enable_all_schedule_timestamp" "0.5" "1.5"
