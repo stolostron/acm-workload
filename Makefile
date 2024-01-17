@@ -3,6 +3,13 @@ MANAGED_CLUSTER_NAME ?= cluster1
 RESOUCE_COUNT ?= 10
 KUBECTL ?= kubectl
 
+SED_CMD:=sed
+ifeq ($(GOHOSTOS),darwin)
+	ifeq ($(GOHOSTARCH),amd64)
+		SED_CMD:=gsed
+	endif
+endif
+
 test: test-klusterlet-agent test-work-mgr test-managed-service-account test-application test-obs-search test-policy
 
 test-failure: test-klusterlet-agent-failure test-work-mgr-failure test-application-failure test-obs-search-failure
@@ -93,7 +100,43 @@ enable-cluster-proxy:
 disable-cluster-proxy:
 	${KUBECTL} patch multiclusterengine multiclusterengine -p '{"spec":{"overrides":{"components":[{"enabled":false,"name":"cluster-proxy-addon"}]}}}' --type=merge
 
+enable-obs:
+	./hack/addons/enable-obs.sh $(MANAGED_CLUSTER_NAME)
+
+enable-obs-from-scratch: prepare-thanos-obj-storage-yaml enable-obs
+
+prepare-thanos-obj-storage-yaml:
+	$(call check_defined, AWS_BUCKET_NAME, AWS_BUCKET_NAME for obs is not defined)
+	$(call check_defined, AWS_ACCESS_KEY, AWS_ACCESS_KEY for obs is not defined)
+	$(call check_defined, AWS_SECRET_KEY, AWS_SECRET_KEY for obs is not defined)
+	cp hack/addons/thanos-object-storage.yaml.sample hack/addons/thanos-object-storage.yaml
+	$(SED_CMD) -i -e "s,<bucket-name>,$(AWS_BUCKET_NAME)," \
+	-e "s,<access_key>,$(AWS_ACCESS_KEY)," \
+	-e "s,<secret_key>,$(AWS_SECRET_KEY)," \
+	hack/addons/thanos-object-storage.yaml
+
+remove-thanos-obj-storage-yaml:
+	rm hack/addons/thanos-object-storage.yaml
+
+disable-obs:
+	echo "WARNING: This will disable the observability addon for all managed clusters"
+	${KUBECTL} delete -f hack/addons/multiclusterobservability_cr.yaml || true
+
 enable-app-search-obs: enable-app enable-search disable-policy disable-cluster-proxy
 enable-policy-search-obs: enable-policy enable-search disable-app disable-cluster-proxy
 enable-policy-proxy-obs: enable-policy enable-cluster-proxy disable-app disable-search
-enable-all: enable-app enable-policy enable-search enable-cluster-proxy
+enable-all: enable-obs-from-scratch enable-app enable-policy enable-search enable-cluster-proxy
+
+
+# Check that given variables are set and all have non-empty values,
+# die with an error otherwise.
+#
+# Params:
+#   1. Variable name(s) to test.
+#   2. (optional) Error message to print.
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $2, ($2))))
