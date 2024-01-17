@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: obs-create-<CLUSTER_NAME>
+spec:
+  schedule: "<CRON_SCHEDULE>"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: my-cronjob
+          containers:
+          - name: obs-create
+            image: quay.io/haoqing/acm-workload:latest
+            imagePullPolicy: Always
+            command:
+            - /bin/sh
+            - -c
+            - date; MANAGED_CLUSTER_NAME=<CLUSTER_NAME> make test-obs-search
+          restartPolicy: OnFailure
+
