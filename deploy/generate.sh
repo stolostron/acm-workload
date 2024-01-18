@@ -22,8 +22,6 @@ create_yaml_file_from_template() {
 
     if [ -e "$template" ]; then
         sed -e "s/<CRON_SCHEDULE>/${3}/g; s/<CLUSTER_NAME>/${cluster_name}/g" "$template" > "$output_file"
-    else
-       echo "Warning: $template does not exist."
     fi
 
 }

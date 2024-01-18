@@ -1,2 +1,3 @@
 # ignore the thanos-object-storage.yaml which may contain some sensitive information
 thanos-object-storage.yaml
+deploy/output/
