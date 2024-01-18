@@ -140,3 +140,15 @@ check_defined = \
 __check_defined = \
     $(if $(value $1),, \
       $(error Undefined $1$(if $2, ($2))))
+
+generate-cronjob:
+	cd deploy && ./generate.sh $(MANAGED_CLUSTER_NAME) && ls output
+
+create-cronjob:
+	${KUBECTL} apply -k ./deploy/ 
+
+delete-cronjob:
+	${KUBECTL} delete -k ./deploy/ 
+
+cronjob: generate-cronjob create-cronjob
+clean-cronjob: generate-cronjob delete-cronjob
