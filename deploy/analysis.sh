@@ -6,13 +6,8 @@ if [ -z "$cluster_name" ]; then
     exit 1
 fi
 
-# Check if folder name is provided
-folder_name=$2
-if [ -z "$folder_name" ]
-then
-      echo "folder name is empty"
-      exit 1
-fi
+folder_name=$PWD/$cluster_name
+analysis_file=$folder_name/acm_analysis
 
 # Function to gather metrics and perform analysis
 gather_and_analyze() {
@@ -30,8 +25,14 @@ gather_and_analyze() {
     local end_timestamp=$(date -u -d "@$end_unix_timestamp" +"%Y-%m-%d %H:%M:%S")
 
     cd /root/go/src/github.com/bjoydeep/acm-inspector/src/statistics
-    python3 ./entry.py "$folder_name" "$start_timestamp" "$end_timestamp"
+    python3 ./entry.py "$folder_name" "$start_timestamp" "$end_timestamp" >> $analysis_file
 }
+
+# gether metrics
+mkdir $folder_name
+DURATION=$(oc get managedclusters $cluster_name --no-headers | awk '{gsub(/h/,"",$6); $6+=1; print $6"h"}')
+docker run -e OC_CLUSTER_URL=$OC_CLUSTER_URL -e OC_TOKEN=$OC_TOKEN -e DURATION=$DURATION -e CLUSTER=spoke -v $folder_name:/acm-inspector/output quay.io/haoqing/acm-inspector:latest > $folder_name/logs
+echo "The metrics has been collected and placed in $folder_name, details see $folder_name/logs"
 
 # managed cluster create time
 mc_timestamp=$(kubectl get managedcluster $cluster_name  -o json | jq -r '.metadata.creationTimestamp')
@@ -64,3 +65,4 @@ gather_and_analyze "$folder_name" "$enable_policy_search_schedule_timestamp" "0.
 # enable-all
 enable_all_schedule_timestamp=$(kubectl get cronjob enable-all-$cluster_name -o json | jq -r '.status.lastScheduleTime')
 gather_and_analyze "$folder_name" "$enable_all_schedule_timestamp" "0.5" "1.5"
+echo "The analysis is complete, details see $analysis_file"
