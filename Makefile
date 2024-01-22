@@ -1,7 +1,7 @@
 SHELL :=/bin/bash
 MANAGED_CLUSTER_NAME ?= cluster1
 RESOUCE_COUNT ?= 10
-KUBECTL ?= kubectl
+KUBECTL ?= oc
 
 SED_CMD:=sed
 ifeq ($(GOHOSTOS),darwin)
@@ -152,3 +152,6 @@ delete-cronjob:
 
 cronjob: generate-cronjob create-cronjob
 clean-cronjob: generate-cronjob delete-cronjob
+
+analysis:
+	cd deploy && ls && ./analysis.sh $(MANAGED_CLUSTER_NAME)

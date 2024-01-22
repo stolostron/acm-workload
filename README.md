@@ -2,16 +2,23 @@
 
 ### Deploy the workload
 
-1. Import a managed cluster and use the make command to enable all the needed addons for the managed cluster, run the command on the **hub** cluster:
+1. Import a managed cluster and use the make command to enable all the needed addons for the managed cluster. 
 
-```
-AWS_BUCKET_NAME=<bucket_name> AWS_ACCESS_KEY=<access_key> AWS_SECRET_KEY=<secret_key> MANAGED_CLUSTER_NAME=<cluster1> make enable-all
+Login to the **hub** cluster and run the below command:
+
+```bash
+export AWS_BUCKET_NAME=<bucket_name> 
+export AWS_ACCESS_KEY=<access_key>
+export AWS_SECRET_KEY=<secret_key> 
+export MANAGED_CLUSTER_NAME=<cluster1>
+
+docker run -it -e AWS_BUCKET_NAME=$AWS_BUCKET_NAME -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY -e AWS_SECRET_KEY=$AWS_SECRET_KEY -e MANAGED_CLUSTER_NAME=$MANAGED_CLUSTER_NAME -v /root/.kube:/root/.kube quay.io/haoqing/acm-workload:latest make enable-all
 ```
 
 Ensure only below `ManagedClusterAddon` are created and "AVAILABLE" status is true on the hub.
 
 ```bash
-$ kubectl get mca -n cluster1
+$ kubectl get mca -n $MANAGED_CLUSTER_NAME
 NAME                          AVAILABLE   DEGRADED   PROGRESSING
 application-manager           True
 cluster-proxy                 True
@@ -24,10 +31,8 @@ work-manager                  True
 
 2. On the **hub** cluster, generate and create cron job based on the `ManagedCluster` `.metadata.creationTimestamp`. 
 
-   **_Note_**: please make sure you have installed the `bc`(dnf install bc) command in your env:
-
 ```bash
-MANAGED_CLUSTER_NAME=<cluster1> make cronjob
+docker run -it -e MANAGED_CLUSTER_NAME=$MANAGED_CLUSTER_NAME -v /root/.kube:/root/.kube quay.io/haoqing/acm-workload:latest make cronjob
 ```
 
 Ensure the below resources are created on the hub.
@@ -55,31 +60,27 @@ NAME         ROLE                        AGE
 my-cronjob   ClusterRole/cluster-admin   2m58s
 ```
 
-### Analysis the usage
+### Analysis the resource usage
 
 Gather metrics and analysis after ahout 16 hours.
 
 Export the **managed** cluster URL and token to the `OC_CLUSTER_URL` and `OC_TOKEN`.
 
 ```bash
-$ export OC_CLUSTER_URL="https://api.fake.test.red-chesterfield.com:6443"
-$ export OC_TOKEN="sha256~xxx"
+export OC_CLUSTER_URL="https://api.fake.test.red-chesterfield.com:6443"
+export OC_TOKEN="sha256~xxx"
 ```
 
-On the **hub** cluster, analysis metrics based on the cronjob time.
+Login to the **hub** cluster, gather the metrics to folder `$PWD/$MANAGED_CLUSTER_NAME`.
 
 ```bash
-./deploy/analysis.sh <cluster1>
+export DURATION=$(oc get managedclusters $MANAGED_CLUSTER_NAME --no-headers | awk '{gsub(/h/,"",$6); $6+=1; print $6"h"}')
+mkdir $MANAGED_CLUSTER_NAME
+docker run -e OC_CLUSTER_URL=$OC_CLUSTER_URL -e OC_TOKEN=$OC_TOKEN -e DURATION=$DURATION -e CLUSTER=spoke -v $PWD/$MANAGED_CLUSTER_NAME:/acm-inspector/output quay.io/haoqing/acm-inspector:latest > $PWD/$MANAGED_CLUSTER_NAME/logs
 ```
 
-The output would be like
+On the **hub** cluster, analysis the metrics based on the cronjob created time, the result is output to `$PWD/$MANAGED_CLUSTER_NAME/acm_analysis`.
 
 ```bash
-+ CLUSTER=spoke
-+ DURATION=17h
-+ oc login https://api.fake.test.red-chesterfield.com:6443 --token sha256~xxx --insecure-skip-tls-verify=true
-+ cd /acm-inspector/src/supervisor
-+ python3 entry.py prom spoke 17h
-The metrics has been collected and placed in /root/go/src/github.com/haoqing/acm-workload/cluster1, details see /root/go/src/github.com/haoqing/acm-workload/cluster1/logs
-The analysis is complete, details see /root/go/src/github.com/haoqing/acm-workload/cluster1/acm_analysis
+docker run -it -e MANAGED_CLUSTER_NAME=$MANAGED_CLUSTER_NAME -v /root/.kube:/root/.kube -v $PWD/$MANAGED_CLUSTER_NAME/:/deploy/$MANAGED_CLUSTER_NAME quay.io/haoqing/acm-workload:latest make analysis
 ```

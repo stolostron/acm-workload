@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+KUBECTL=${KUBECTL:-oc}
+
 # Check if cluster name is provided
 cluster_name=$1
 if [ -z "$cluster_name" ]; then
@@ -49,8 +51,8 @@ create_yaml_by_offset() {
 }
 
 # Check if kubectl command succeeded
-if ! mc_timestamp=$(kubectl get managedcluster "$cluster_name" -o json | jq -r '.metadata.creationTimestamp'); then
-    echo "Error: Failed to retrieve managed cluster information using kubectl."
+if ! mc_timestamp=$(${KUBECTL} get managedcluster "$cluster_name" -o json | jq -r '.metadata.creationTimestamp'); then
+    echo "Error: Failed to retrieve managed cluster information using ${KUBECTL}."
     exit 1
 fi
 
