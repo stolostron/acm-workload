@@ -1,4 +1,7 @@
 #!/bin/bash
+
+KUBECTL=${KUBECTL:-oc}
+
 operate=$1
 if [ -z "$operate" ]
 then
@@ -26,6 +29,6 @@ fi
 
 for((i=1;i<=$count;i++))
 do
-        kubectl apply -f $resource_template --dry-run=client -o yaml | sed "s|NUM|${i}|g" \
-        | sed "s|MANAGED_CLUSTER_NAME|${cluster_name}|g" | kubectl $operate -f -
+        ${KUBECTL} apply -f $resource_template --dry-run=client -o yaml | sed "s|NUM|${i}|g" \
+        | sed "s|MANAGED_CLUSTER_NAME|${cluster_name}|g" | ${KUBECTL} $operate -f -
 done

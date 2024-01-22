@@ -62,7 +62,7 @@ if [ -z "$CLUSTER_NAME" ]; then
   exit 1
 fi
 
-${KUBECTL} create namespace open-cluster-management-observability --dry-run=client -o yaml | oc apply -f - # kubectl >= 1.19
+${KUBECTL} create namespace open-cluster-management-observability --dry-run=client -o yaml | ${KUBECTL} apply -f - # kubectl >= 1.19
 
 set +o errexit
 DOCKER_CONFIG_JSON=`${KUBECTL} extract secret/multiclusterhub-operator-pull-secret -n open-cluster-management --to=-`
