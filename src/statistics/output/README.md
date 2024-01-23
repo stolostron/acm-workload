@@ -1,0 +1,1 @@
+This directory will be empty in Git. When the code is run on the user terminal, this will have csv files that shows the statistics result. Please do not submit the csv files in the repo.

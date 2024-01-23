@@ -3,6 +3,10 @@ MANAGED_CLUSTER_NAME ?= cluster1
 RESOUCE_COUNT ?= 10
 KUBECTL ?= oc
 
+# Image URL to use all building/pushing image targets
+IMAGE_REGISTRY ?= quay.io/haoqing
+IMAGE_TAG ?= latest
+
 SED_CMD:=sed
 ifeq ($(GOHOSTOS),darwin)
 	ifeq ($(GOHOSTARCH),amd64)
@@ -103,7 +107,7 @@ disable-cluster-proxy:
 enable-obs:
 	./hack/addons/enable-obs.sh $(MANAGED_CLUSTER_NAME)
 
-enable-obs-from-scratch: prepare-thanos-obj-storage-yaml enable-obs
+enable-obs-from-scratch: prepare-thanos-obj-storage-yaml enable-obs remove-thanos-obj-storage-yaml
 
 prepare-thanos-obj-storage-yaml:
 	$(call check_defined, AWS_BUCKET_NAME, AWS_BUCKET_NAME for obs is not defined)
@@ -154,4 +158,12 @@ cronjob: generate-cronjob create-cronjob
 clean-cronjob: generate-cronjob delete-cronjob
 
 analysis:
-	cd deploy && ls && ./analysis.sh $(MANAGED_CLUSTER_NAME)
+	./deploy/analysis.sh $(MANAGED_CLUSTER_NAME)
+
+build-images:
+	docker build -t ${IMAGE_REGISTRY}/acm-workload:${IMAGE_TAG} -f Dockerfile .
+
+push-images:
+	docker push ${IMAGE_REGISTRY}/acm-workload:${IMAGE_TAG}
+
+build-push-images: build-images push-images

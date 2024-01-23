@@ -67,6 +67,7 @@ Gather metrics and analysis after ahout 16 hours.
 Export the **managed** cluster URL and token to the `OC_CLUSTER_URL` and `OC_TOKEN`.
 
 ```bash
+export MANAGED_CLUSTER_NAME=<cluster1>
 export OC_CLUSTER_URL="https://api.fake.test.red-chesterfield.com:6443"
 export OC_TOKEN="sha256~xxx"
 ```
@@ -82,5 +83,5 @@ docker run -e OC_CLUSTER_URL=$OC_CLUSTER_URL -e OC_TOKEN=$OC_TOKEN -e DURATION=$
 On the **hub** cluster, analysis the metrics based on the cronjob created time, the result is output to `$PWD/$MANAGED_CLUSTER_NAME/acm_analysis`.
 
 ```bash
-docker run -it -e MANAGED_CLUSTER_NAME=$MANAGED_CLUSTER_NAME -v /root/.kube:/root/.kube -v $PWD/$MANAGED_CLUSTER_NAME/:/deploy/$MANAGED_CLUSTER_NAME quay.io/haoqing/acm-workload:latest make analysis
+docker run -it -e MANAGED_CLUSTER_NAME=$MANAGED_CLUSTER_NAME -v /root/.kube:/root/.kube -v $PWD/$MANAGED_CLUSTER_NAME/:/acm-workload/$MANAGED_CLUSTER_NAME quay.io/haoqing/acm-workload:latest make analysis
 ```

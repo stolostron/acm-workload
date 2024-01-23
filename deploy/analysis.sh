@@ -2,6 +2,11 @@
 
 KUBECTL=${KUBECTL:-oc}
 
+# Get the directory of the currently executing script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BASE_DIR="$( cd "$( dirname "${DIR}" )" && pwd )"
+printf "DIR: ${DIR}, BASE_DIR: ${BASE_DIR}\n"
+
 # Check if cluster name is provided
 cluster_name=$1
 if [ -z "$cluster_name" ]; then
@@ -9,8 +14,9 @@ if [ -z "$cluster_name" ]; then
     exit 1
 fi
 
-folder_name=$PWD/$cluster_name
+folder_name=$BASE_DIR/$cluster_name
 analysis_file=$folder_name/acm_analysis
+analysis_file_relative_path="./$cluster_name/acm_analysis"
 
 # Function to gather metrics and perform analysis
 gather_and_analyze() {
@@ -27,10 +33,7 @@ gather_and_analyze() {
     local end_unix_timestamp=$(echo "$base_unix_timestamp + $end_offset * 3600" | bc)
     local end_timestamp=$(date -u -d "@$end_unix_timestamp" +"%Y-%m-%d %H:%M:%S")
 
-# TODO: replace with local python3 analysis script
-#    cd /root/go/src/github.com/bjoydeep/acm-inspector/src/statistics
-#    python3 ./entry.py "$folder_name" "$start_timestamp" "$end_timestamp" >> $analysis_file
-    echo "./entry.py "$folder_name" "$start_timestamp" "$end_timestamp"" >> $analysis_file
+    python3 $BASE_DIR/src/statistics/entry.py "$folder_name" "$start_timestamp" "$end_timestamp" >> $analysis_file
 }
 
 # managed cluster create time
@@ -64,4 +67,4 @@ gather_and_analyze "$folder_name" "$enable_policy_search_schedule_timestamp" "0.
 # enable-all
 enable_all_schedule_timestamp=$(${KUBECTL} get cronjob enable-all-$cluster_name -o json | jq -r '.status.lastScheduleTime')
 gather_and_analyze "$folder_name" "$enable_all_schedule_timestamp" "0.5" "1.5"
-echo "The analysis is complete, details see $analysis_file"
+echo "The analysis is complete, details see $analysis_file_relative_path"
