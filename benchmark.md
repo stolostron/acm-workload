@@ -13,13 +13,14 @@ ACM 2.9
 
 ## Testing flow
 
-Build TWO ACM 2.9 environments, each has 1 hub + 2 managed clusters, follow the testing steps in [acm-workload](https://github.com/haoqing0110/acm-workload/blob/main/README.md) to get resource usage, will get 4 groups resource usage of the managed clusters and calculate the average usage. 
+Build TWO ACM 2.9 environments, each has 1 hub + 2 managed clusters, follow the testing steps in [acm-workload](https://github.com/haoqing0110/acm-workload/blob/main/README.md) to get resource usage. 
+Will finally get 4 groups data of managed cluster resource usage, each group contains 4 use cases (idle, creating 10 applications, creating 6 config polies and creating 100 manifestworks). Calculate the average as the result. 
 
 ## Benchmark
 
 CPU usage (millicore) of each agent
 
-| Component                       | idel       | 10 applications | 2 policies (each contains 3 config policy) | 100 manifestworks |
+| Component                       | idle       | 10 applications | 2 policies (each contains 3 config policy) | 100 manifestworks |
 |----------------------------------|------------|-----------------|--------------------------------------------|---------------------|
 | klusterlet                       | 2.0        | 1.9             | 1.9                                        | 1.9                 |
 | klusterlet-agent                 | 4.2        | 4.4             | 4.1                                        | 13.2                |
@@ -36,7 +37,7 @@ CPU usage (millicore) of each agent
 
 Memory usage (MB) of each agent
 
-| Component                       | idel       | 10 applications | 2 policies (each contains 3 config policy) | 100 manifestworks |
+| Component                       | idle       | 10 applications | 2 policies (each contains 3 config policy) | 100 manifestworks |
 |----------------------------------|------------|-----------------|--------------------------------------------|---------------------|
 | klusterlet                       | 50.7       | 52.7            | 52.8                                       | 52.9                |
 | klusterlet-agent                 | 71.0       | 73.2            | 72.8                                       | 78.8                |
