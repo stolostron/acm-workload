@@ -1,5 +1,24 @@
+## Testing environment
+
+1 hub + 2 managed cluster, each cluster has: 
+
+- allocatable cpu: 15500m
+- allocatable memory: 63400724Ki
+- capacity cpu: 16
+- capacity memory: 64551700Ki
+
+## Testing version 
+
+ACM 2.9
+
+## Testing flow
+
+Build TWO ACM 2.9 environments, each has 1 hub + 2 managed clusters, follow the testing steps in [acm-workload](https://github.com/haoqing0110/acm-workload/blob/main/README.md) to get resource usage, will get 4 groups resource usage of the managed clusters and calculate the average usage. 
+
+## Benchmark
 
 CPU usage (millicore) of each agent
+
 | Component                       | idel       | 10 applications | 2 policies (each contains 3 config policy) | 100 manifestworks |
 |----------------------------------|------------|-----------------|--------------------------------------------|---------------------|
 | klusterlet                       | 2.0        | 1.9             | 1.9                                        | 1.9                 |
