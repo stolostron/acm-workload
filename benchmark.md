@@ -9,7 +9,8 @@
 
 ## Testing version 
 
-ACM 2.9
+OCP 4.12.18
+ACM 2.9.2
 
 ## Testing flow
 
