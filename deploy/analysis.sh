@@ -25,6 +25,11 @@ gather_and_analyze() {
     local start_offset=$3
     local end_offset=$4
 
+    if [ "$base_timestamp" = "null" ]; then
+        echo "no base timestamp"
+        return
+    fi
+
     local base_unix_timestamp=$(date -u -d "$base_timestamp" +"%s")
 
     local start_unix_timestamp=$(echo "$base_unix_timestamp + $start_offset * 3600" | bc)
