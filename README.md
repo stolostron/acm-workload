@@ -100,7 +100,7 @@ export OC_TOKEN="sha256~xxx"
 Login to the **hub** cluster, gather the metrics to folder `$PWD/$MANAGED_CLUSTER_NAME`.
 
 ```bash
-export DURATION=$(oc get managedclusters $MANAGED_CLUSTER_NAME --no-headers | awk '{gsub(/h/,"",$6); if ($6 ~ /d/) { split($6, arr, "d"); $6=(arr[1]*24)+arr[2]; } $6+=1; print $6"h"}')
+export DURATION=$(oc get managedclusters $MANAGED_CLUSTER_NAME --no-headers | awk '{gsub(/h/,"",$6); if ($6 ~ /d/) { split($6, arr, "d"); $6=(arr[1]*24)+arr[2]; } $6+=3; print $6"h"}')
 mkdir $MANAGED_CLUSTER_NAME
 docker run -e OC_CLUSTER_URL=$OC_CLUSTER_URL -e OC_TOKEN=$OC_TOKEN -e DURATION=$DURATION -e CLUSTER=spoke -v $PWD/$MANAGED_CLUSTER_NAME:/acm-inspector/output quay.io/haoqing/acm-inspector:latest > $PWD/$MANAGED_CLUSTER_NAME/logs
 ```
