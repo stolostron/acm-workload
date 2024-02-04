@@ -1,5 +1,30 @@
 ## Usage
 
+### Prerequisite (optional)
+
+When the [observability addon is enabled or disabled](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.9/html/observability/enabling-observability-service#enabling-observability) on OpenShift clusters managed by ACM, the local Prometheus will restart and all previous metrics will be lost. 
+
+If you want to retain the metrics before ACM installation, you need to configure persistent storage for Prometheus to prevent metrics lost. Follow the steps for [Configuring persistent storage](https://docs.openshift.com/container-platform/4.12/monitoring/configuring-the-monitoring-stack.html#configuring_persistent_storage_configuring-the-monitoring-stack) before importing the OpenShift cluster as managed clusters.
+
+For example, create the following resource on the managed cluster before importing it:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |
+    prometheusK8s:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3-csi
+          resources:
+            requests:
+              storage: 10Gi
+```
+
 ### Deploy the workload
 
 1. Import a managed cluster and use the make command to enable all the needed addons for the managed cluster. 
