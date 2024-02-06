@@ -43,6 +43,7 @@ gather_and_analyze() {
 
 # managed cluster create time
 mc_timestamp=$(${KUBECTL} get managedcluster $cluster_name  -o json | jq -r '.metadata.creationTimestamp')
+gather_and_analyze "$folder_name" "$mc_timestamp" "-2" "0"
 gather_and_analyze "$folder_name" "$mc_timestamp" "1" "6"
 
 # app cron job schedule time
