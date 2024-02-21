@@ -19,11 +19,60 @@ spec:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
+          name: my-configmap-dependency-NUM
+        spec:
+          pruneObjectBehavior: DeleteIfCreated
+          remediationAction: enforce
+          severity: low
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: acm-policy-sandbox-NUM
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: my-configmap-dependency-NUM
+                  namespace: acm-policy-sandbox-NUM
+                data:
+                  cluster: '{{hub .ManagedClusterName hub}}'
+    - extraDependencies:
+        - apiVersion: policy.open-cluster-management.io/v1
+          kind: ConfigurationPolicy
+          name: my-configmap-dependency-NUM
+          compliance: Compliant
+      objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: configmap-policy-NUM
+        spec:
+          pruneObjectBehavior: DeleteIfCreated
+          remediationAction: enforce
+          severity: low
+          object-templates-raw: |
+            {{ $ns := "acm-policy-sandbox-NUM" }}
+            {{ range $suffix := (list "a" "b" "c" "d") }}
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: my-super-duper-configmap-{{ $suffix }}
+                  namespace: {{ $ns }}
+                data:
+                  cluster-lookup: {{ fromConfigMap $ns "my-configmap-dependency-NUM" "cluster" }}
+            {{ end }}
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
           name: backplane-cee-sp-NUM
         spec:
-          evaluationInterval:
-            compliant: 2h
-            noncompliant: 45s
           object-templates:
             - complianceType: mustonlyhave
               metadataComplianceType: musthave
@@ -49,9 +98,6 @@ spec:
         metadata:
           name: backplane-cee-sp2-NUM
         spec:
-          evaluationInterval:
-            compliant: 2h
-            noncompliant: 45s
           object-templates:
             - complianceType: mustonlyhave
               metadataComplianceType: musthave
@@ -77,9 +123,6 @@ spec:
         metadata:
           name: backplane-cee-sp3-NUM
         spec:
-          evaluationInterval:
-            compliant: 2h
-            noncompliant: 45s
           namespaceSelector:
             exclude:
               - openshift-backplane-cluster-admin

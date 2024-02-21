@@ -47,7 +47,7 @@ test-obs-search-failure:
 	cd klusterlet-agent && ./run.sh apply resource-failure.yaml 100 $(MANAGED_CLUSTER_NAME)
 
 test-policy:
-	cd policy && ./run.sh apply resource.yaml 2 $(MANAGED_CLUSTER_NAME)
+	cd policy && ./run.sh apply resource.yaml $(RESOURCE_COUNT) $(MANAGED_CLUSTER_NAME)
 
 clean-klusterlet-agent:
 	cd klusterlet-agent && \
